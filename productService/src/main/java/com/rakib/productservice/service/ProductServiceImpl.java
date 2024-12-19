@@ -1,10 +1,13 @@
 package com.rakib.productservice.service;
 
 import com.rakib.productservice.entity.Product;
+import com.rakib.productservice.exception.ProductServiceCustomException;
 import com.rakib.productservice.model.ProductRequest;
+import com.rakib.productservice.model.ProductResponse;
 import com.rakib.productservice.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +19,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public long addProduct(ProductRequest productRequest) {
-     //   log.info("Adding product {}", productRequest);
+        log.info("Adding product {}", productRequest);
         Product product
                 = Product.builder()
                 .productName(productRequest.getName())
@@ -26,7 +29,17 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.save(product);
 
-     //   log.info("Product Created");
+        log.info("Product Created");
         return product.getProductId();
+    }
+
+    @Override
+    public ProductResponse getProductById(long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() ->
+                        new ProductServiceCustomException("Product with given id not found", "PRODUCT_NOT_FOUND"));
+        ProductResponse productResponse = new ProductResponse();
+        BeanUtils.copyProperties(product, productResponse);
+        return productResponse;
     }
 }
