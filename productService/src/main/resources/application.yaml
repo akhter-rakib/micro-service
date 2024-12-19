@@ -15,3 +15,14 @@ spring:
       hibernate:
         format_sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
+  application:
+    name: PRODUCT-SERVICE
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_SERVER_ADDRESS:http://localhost:8761/eureka}
