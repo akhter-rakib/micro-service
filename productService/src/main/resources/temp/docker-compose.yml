@@ -15,6 +15,15 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin-container
+    restart: always
+    ports:
+      - "9411:9411"
+    deploy:
+      update_config:
+        order: start-first  # Ensures smooth updates during deployment
+
 volumes:
   mysql-data:
-
