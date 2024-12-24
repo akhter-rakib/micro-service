@@ -7,10 +7,12 @@ import com.rakib.orderservice.external.ProductService;
 import com.rakib.orderservice.external.request.PaymentRequest;
 import com.rakib.orderservice.model.OrderRequest;
 import com.rakib.orderservice.model.OrderResponse;
+import com.rakib.orderservice.model.ProductResponse;
 import com.rakib.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +23,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductService productService;
     private final PaymentService paymentService;
+    private final RestTemplate restTemplate;
 
     @Override
     public long placeOrder(OrderRequest orderRequest) {
@@ -79,12 +82,27 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new CustomException("Order not found for the order Id:" + orderId,
                         "NOT_FOUND",
                         404));
+        log.info("Invoking Product service to fetch the product for id: {}", order.getProductId());
+
+        ProductResponse productResponse
+                = restTemplate.getForObject(
+                "http://PRODUCT-SERVICE/products/" + order.getProductId(),
+                ProductResponse.class
+        );
+
+        OrderResponse.ProductDetails productDetails
+                = OrderResponse.ProductDetails
+                .builder()
+                .productName(productResponse.getProductName())
+                .productId(productResponse.getProductId())
+                .build();
 
         return OrderResponse.builder()
                 .orderId(order.getId())
                 .orderStatus(order.getOrderStatus())
                 .amount(order.getAmount())
                 .orderDate(order.getOrderDate())
+                .productDetails(productDetails)
                 .build();
     }
 
