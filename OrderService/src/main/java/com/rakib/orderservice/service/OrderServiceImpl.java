@@ -1,10 +1,12 @@
 package com.rakib.orderservice.service;
 
 import com.rakib.orderservice.entity.Order;
+import com.rakib.orderservice.exception.CustomException;
 import com.rakib.orderservice.external.PaymentService;
 import com.rakib.orderservice.external.ProductService;
 import com.rakib.orderservice.external.request.PaymentRequest;
 import com.rakib.orderservice.model.OrderRequest;
+import com.rakib.orderservice.model.OrderResponse;
 import com.rakib.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,4 +68,24 @@ public class OrderServiceImpl implements OrderService {
         log.info("Order Places successfully with Order Id: {}", order.getId());
         return order.getId();
     }
+
+    @Override
+    public OrderResponse getOrderDetails(long orderId) {
+
+        log.info("Get order details for Order Id : {}", orderId);
+
+        Order order
+                = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException("Order not found for the order Id:" + orderId,
+                        "NOT_FOUND",
+                        404));
+
+        return OrderResponse.builder()
+                .orderId(order.getId())
+                .orderStatus(order.getOrderStatus())
+                .amount(order.getAmount())
+                .orderDate(order.getOrderDate())
+                .build();
+    }
+
 }
