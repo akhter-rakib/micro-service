@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Data
@@ -40,6 +39,6 @@ public class OrderResponse {
         private long paymentId;
         private PaymentMode paymentMode;
         private String paymentStatus;
-        private Instant paymentDate;
+        private LocalDateTime paymentDate;
     }
 }

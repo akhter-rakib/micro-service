@@ -9,6 +9,7 @@ import com.rakib.orderservice.model.OrderRequest;
 import com.rakib.orderservice.model.OrderResponse;
 import com.rakib.orderservice.model.ProductResponse;
 import com.rakib.orderservice.repository.OrderRepository;
+import com.rakib.orderservice.response.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -90,6 +91,22 @@ public class OrderServiceImpl implements OrderService {
                 ProductResponse.class
         );
 
+        log.info("Getting payment information form the payment Service");
+        PaymentResponse paymentResponse
+                = restTemplate.getForObject(
+                "http://PAYMENT-SERVICE/payments/order/" + order.getId(),
+                PaymentResponse.class
+        );
+
+        OrderResponse.PaymentDetails paymentDetails
+                = OrderResponse.PaymentDetails
+                .builder()
+                .paymentId(paymentResponse.getPaymentId())
+                .paymentStatus(paymentResponse.getStatus())
+                .paymentDate(paymentResponse.getPaymentDate())
+                .paymentMode(paymentResponse.getPaymentMode())
+                .build();
+
         OrderResponse.ProductDetails productDetails
                 = OrderResponse.ProductDetails
                 .builder()
@@ -103,6 +120,7 @@ public class OrderServiceImpl implements OrderService {
                 .amount(order.getAmount())
                 .orderDate(order.getOrderDate())
                 .productDetails(productDetails)
+                .paymentDetails(paymentDetails)
                 .build();
     }
 
