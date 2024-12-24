@@ -1,6 +1,6 @@
 package com.rakib.orderservice.model;
 
-import com.rakib.orderservice.enums.PaymentMode;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
