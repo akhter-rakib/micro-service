@@ -25,5 +25,15 @@ services:
       update_config:
         order: start-first  # Ensures smooth updates during deployment
 
+  redis:
+    image: redis:latest
+    container_name: redis-container
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
 volumes:
   mysql-data:
+  redis-data:
